@@ -68,7 +68,6 @@ def main() -> None:
         output_path = OUTPUTS[label]
         fig.savefig(output_path, dpi=180, bbox_inches="tight")
         plt.close(fig)
-        print(f"{label}: {margins.size:,} winners; plot saved to {output_path}")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,38 @@
+INCUMBENCY PROJECT - DATA REBUILD REPORT
+=======================================================
+Rows remaining after deposit_lost filter: 19454
+Rows removed because deposit_lost == True: 72215
+General election rows after deposit filter: 18840
+Other poll type rows: 614
+Unknown poll type rows: 0
+
+INCUMBENT DATASETS
+All poll-type incumbents: 4922
+General-election incumbents: 4900
+With known previous-win margin: 4880
+Without known previous-win margin: 20
+
+LAST WIN TYPE
+last_win_type
+GENERAL_ELECTION    4737
+BY_ELECTION          161
+<NA>                   2
+
+MATCH STATUS
+last_win_match_status
+MATCHED                               4869
+MATCHED_MONTH_UNAVAILABLE               11
+PRIOR_WIN_FOUND_BUT_MARGIN_MISSING      10
+AMBIGUOUS_MULTIPLE_WINS_SAME_EVENT       8
+AMBIGUOUS_DATE_MONTH                     2
+
+Missing margins in complete file: 0
+
+IMPORTANT NOTES
+1. Historical matching uses all poll types.
+2. Main analysis contains general elections only.
+3. last_win_type describes the previous victory.
+4. A by-election winner can be a genuine incumbent at a later general election.
+5. Missing margins are never replaced with zero.
+6. Rows with deposit_lost == True are removed from all poll types before splitting and historical matching. The deposit_lost column is removed from enriched output files.
+7. The complete-margin file is a selected subset. Unmatched rows are preserved separately.
