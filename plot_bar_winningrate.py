@@ -1,13 +1,3 @@
-"""Plot winning candidates by margin-percentage bracket.
-
-Run from any directory with:
-    python plot_margin_variance.py path/to/incumbents.csv path/to/non_incumbents.csv
-
-The script reads filtered_data/incumbents.csv and
-filtered_data/non_incumbents.csv, keeps winning candidates (position == 1),
-and saves a separate count histogram for each group.
-"""
-
 from pathlib import Path
 import argparse
 
@@ -78,7 +68,6 @@ def main() -> None:
         output_path = OUTPUTS[label]
         fig.savefig(output_path, dpi=180, bbox_inches="tight")
         plt.close(fig)
-        print(f"{label}: {margins.size:,} winners; plot saved to {output_path}")
 
 
 if __name__ == "__main__":
