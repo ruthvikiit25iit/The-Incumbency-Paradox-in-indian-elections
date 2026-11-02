@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = ROOT / "data_visualisations"
 OUTPUTS = {
     "Incumbent winners": OUTPUT_DIR / "incumbent_winners_by_margin_bracket.png",

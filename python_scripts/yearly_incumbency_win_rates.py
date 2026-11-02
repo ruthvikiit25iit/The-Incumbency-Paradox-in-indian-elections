@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parent.parent
 
 INPUT_FILE = (
     PROJECT_DIR / "filtered_data" / "corrected"
