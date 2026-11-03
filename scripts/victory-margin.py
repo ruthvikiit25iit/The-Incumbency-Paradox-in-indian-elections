@@ -1,27 +1,57 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import sys
+import argparse
 from pathlib import Path
 
-source_file = sys.argv[1]
+import matplotlib.pyplot as plt
+import pandas as pd
 
-visualisation_folder = Path("visualisations")
+project_root = Path(__file__).resolve().parent.parent
+default_source = project_root / "data_files" / "extended.csv"
+parser = argparse.ArgumentParser(description="Summarize victory margins for winning candidates.")
+parser.add_argument(
+    "source_file",
+    nargs="?",
+    type=Path,
+    default=default_source,
+    help=f"Candidate-level election CSV (default: {default_source})",
+)
+args = parser.parse_args()
+source_file = args.source_file.resolve()
+
+visualisation_folder = project_root / "visualisations"
 visualisation_folder.mkdir(exist_ok=True)
 
 data = pd.read_csv(source_file, low_memory=False)
-data = data[data["poll_type"] == 0]
-data = data[data["position"] == 1]
-
-data["incumbent"] = data["incumbent"].astype(str).str.lower()
+data["poll_type"] = pd.to_numeric(data["poll_type"], errors="coerce")
+data["position"] = pd.to_numeric(data["position"], errors="coerce")
 data["margin_percentage"] = pd.to_numeric(
     data["margin_percentage"],
     errors="coerce"
 )
+status = data["incumbent"].astype("string").str.strip().str.lower()
+data["is_incumbent"] = status.map(
+    {"true": True, "1": True, "yes": True, "false": False, "0": False, "no": False}
+)
 
-data = data[data["margin_percentage"].notna()]
+base = data.loc[
+    data["poll_type"].eq(0)
+    & data["position"].notna()
+    & data["is_incumbent"].notna()
+].copy()
+complete = base.dropna(subset=["margin_percentage"])
+missing_margin_by_group = {
+    label: int(
+        (
+            base["position"].eq(1)
+            & base["is_incumbent"].eq(status_value)
+            & base["margin_percentage"].isna()
+        ).sum()
+    )
+    for label, status_value in (("incumbent", True), ("non_incumbent", False))
+}
+complete_winners = complete.loc[complete["position"].eq(1)].copy()
 
-incumbents = data[data["incumbent"] == "true"]
-non_incumbents = data[data["incumbent"] == "false"]
+incumbents = complete_winners[complete_winners["is_incumbent"].eq(True)]
+non_incumbents = complete_winners[complete_winners["is_incumbent"].eq(False)]
 
 incumbent_mean = incumbents["margin_percentage"].mean()
 non_incumbent_mean = non_incumbents["margin_percentage"].mean()
@@ -149,6 +179,18 @@ plt.close()
 print()
 print("VICTORY MARGIN ANALYSIS")
 print("=" * 65)
+print(f"Input file: {source_file}")
+print("Common complete-case rule: poll_type=0, known incumbent status, numeric position, nonblank margin_percentage")
+print(
+    "Complete candidate sample: "
+    f"incumbents={int(complete['is_incumbent'].sum()):,}; "
+    f"non-incumbents={int(complete['is_incumbent'].eq(False).sum()):,}"
+)
+print(
+    "Winning rows excluded for blank margin_percentage: "
+    f"incumbents={missing_margin_by_group['incumbent']:,}; "
+    f"non-incumbents={missing_margin_by_group['non_incumbent']:,}"
+)
 print(f"{'Statistic':<30}{'Incumbents':>15}{'Non-incumbents':>20}")
 print("-" * 65)
 print(f"{'Number of winners':<30}{len(incumbents):>15}{len(non_incumbents):>20}")

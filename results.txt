@@ -1,9 +1,11 @@
-Input file: signed_margin_analysis/data_files/elections_with_margin_history_and_party_vote_share_from_field.csv
+Input file: data_files/extended.csv
+Common complete-case rule: poll_type=0, known incumbent status, numeric position, nonblank margin_percentage
 Confidence level: 95%
-Incumbent win rate: 2,837/4,900 = 57.90% (95% CI: 56.51% to 59.27%)
-Non-incumbent win rate: 5,171/12,855 = 40.23% (95% CI: 39.38% to 41.08%)
-Win-rate difference (incumbent minus non-incumbent): 17.67% (95% CI: 16.04% to 19.29%)
-Chart saved to: signed_margin_analysis/visualisations/incumbent_win_rates_with_confidence_intervals.png
+Incumbent win rate: 2,835/4,898 = 57.88% (95% CI: 56.49% to 59.26%); missing-margin exclusions: 2
+Non-incumbent win rate: 5,160/12,844 = 40.17% (95% CI: 39.33% to 41.03%); missing-margin exclusions: 11
+Win-rate difference (incumbent minus non-incumbent): 17.71% (95% CI: 16.08% to 19.32%)
+Candidate sample sizes: incumbents=4,898; non-incumbents=12,844
+Chart saved to: visualisations/incumbent_win_rates_with_confidence_intervals.png
 
 
 ====================================================================================================================
@@ -11,6 +13,10 @@ STAGE-2
 
 VICTORY MARGIN ANALYSIS
 =================================================================
+Input file: data_files/extended.csv
+Common complete-case rule: poll_type=0, known incumbent status, numeric position, nonblank margin_percentage
+Complete candidate sample: incumbents=4,898; non-incumbents=12,844
+Winning rows excluded for blank margin_percentage: incumbents=2; non-incumbents=11
 Statistic                          Incumbents      Non-incumbents
 -----------------------------------------------------------------
 Number of winners                        2835                5160

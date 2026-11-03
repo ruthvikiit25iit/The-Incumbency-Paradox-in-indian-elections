@@ -18,7 +18,14 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from scipy.stats import norm
+try:
+    from scipy.stats import norm
+except ImportError:
+    norm = None
+
+
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+DEFAULT_INPUT = PROJECT_DIR / "data_files" / "extended.csv"
 
 
 def convert_to_boolean(values):
@@ -131,7 +138,13 @@ def main():
     parser = argparse.ArgumentParser(
         description="Compare incumbent and non-incumbent candidate win rates."
     )
-    parser.add_argument("input_csv", type=Path, help="Candidate-level election CSV")
+    parser.add_argument(
+        "input_csv",
+        type=Path,
+        nargs="?",
+        default=DEFAULT_INPUT,
+        help=f"Candidate-level election CSV (default: {DEFAULT_INPUT})",
+    )
     parser.add_argument(
         "--output",
         type=Path,
@@ -146,9 +159,7 @@ def main():
     parser.add_argument(
         "--plot-output",
         type=Path,
-        default=Path(
-            "signed_margin_analysis/visualisations/incumbent_win_rates_with_confidence_intervals.png"
-        ),
+        default=PROJECT_DIR / "visualisations" / "incumbent_win_rates_with_confidence_intervals.png",
         help="Path for the win-rate chart",
     )
     args = parser.parse_args()
@@ -156,14 +167,18 @@ def main():
     if not 0 < args.confidence < 1:
         parser.error("--confidence must be between 0 and 1")
 
-    candidates = pd.read_csv(args.input_csv, low_memory=False)
-    required = {"poll_type", "position", "incumbent"}
+    input_file = args.input_csv.resolve()
+    candidates = pd.read_csv(input_file, low_memory=False)
+    required = {"poll_type", "position", "incumbent", "margin_percentage"}
     missing = required - set(candidates.columns)
     if missing:
         raise ValueError(f"Missing required columns: {', '.join(sorted(missing))}")
 
     candidates["poll_type"] = pd.to_numeric(candidates["poll_type"], errors="coerce")
     candidates["position"] = pd.to_numeric(candidates["position"], errors="coerce")
+    candidates["margin_percentage"] = pd.to_numeric(
+        candidates["margin_percentage"], errors="coerce"
+    )
     candidates["is_incumbent"] = convert_to_boolean(candidates["incumbent"])
     missing_incumbent = int(candidates["is_incumbent"].isna().sum())
 
@@ -171,9 +186,23 @@ def main():
     candidates = candidates.loc[
         (candidates["poll_type"] == 0) & candidates["is_incumbent"].notna()
     ].copy()
+    missing_margin_by_group = {
+        label: int(
+            (
+                candidates["is_incumbent"].eq(status)
+                & candidates["margin_percentage"].isna()
+            ).sum()
+        )
+        for label, status in (("incumbent", True), ("non_incumbent", False))
+    }
+    candidates = candidates.dropna(subset=["position", "margin_percentage"])
     candidates["won"] = candidates["position"] == 1
 
-    critical_value = float(norm.ppf(1 - (1 - args.confidence) / 2))
+    critical_value = (
+        float(norm.ppf(1 - (1 - args.confidence) / 2))
+        if norm is not None
+        else 1.959963984540054
+    )
     results = {}
     for label, is_incumbent in [("incumbent", True), ("non_incumbent", False)]:
         # Count candidates and winners separately for each group.
@@ -185,6 +214,7 @@ def main():
         results[label] = {
             "candidate_entries": candidate_count,
             "wins": win_count,
+            "missing_margin_excluded": missing_margin_by_group[label],
             "win_rate": rate,
             "ci_lower": interval[0],
             "ci_upper": interval[1],
@@ -210,13 +240,16 @@ def main():
     summary = {
         "confidence_level": args.confidence,
         "poll_type_included": 0,
+        "margin_percentage_nonmissing_required": True,
         "incumbent_candidate_entries": incumbent["candidate_entries"],
         "incumbent_wins": incumbent["wins"],
+        "incumbent_missing_margin_exclusions": incumbent["missing_margin_excluded"],
         "incumbent_win_rate": incumbent["win_rate"],
         "incumbent_ci_lower": incumbent["ci_lower"],
         "incumbent_ci_upper": incumbent["ci_upper"],
         "non_incumbent_candidate_entries": non_incumbent["candidate_entries"],
         "non_incumbent_wins": non_incumbent["wins"],
+        "non_incumbent_missing_margin_exclusions": non_incumbent["missing_margin_excluded"],
         "non_incumbent_win_rate": non_incumbent["win_rate"],
         "non_incumbent_ci_lower": non_incumbent["ci_lower"],
         "non_incumbent_ci_upper": non_incumbent["ci_upper"],
@@ -226,7 +259,8 @@ def main():
         "rows_excluded_for_missing_incumbent_status": missing_incumbent,
     }
 
-    print(f"Input file: {args.input_csv}")
+    print(f"Input file: {input_file}")
+    print("Common complete-case rule: poll_type=0, known incumbent status, numeric position, nonblank margin_percentage")
     print(f"Confidence level: {args.confidence:.0%}")
     for label, title in [
         ("incumbent", "Incumbent win rate"),
@@ -236,7 +270,9 @@ def main():
         print(
             f"{title}: {result['wins']:,}/{result['candidate_entries']:,} = "
             f"{result['win_rate']:.2%} "
-            f"(95% CI: {result['ci_lower']:.2%} to {result['ci_upper']:.2%})"
+            f"(95% CI: {result['ci_lower']:.2%} to {result['ci_upper']:.2%}); "
+            f"candidate sample n={result['candidate_entries']:,}; "
+            f"missing-margin exclusions={result['missing_margin_excluded']:,}"
         )
     print(
         "Win-rate difference (incumbent minus non-incumbent): "
