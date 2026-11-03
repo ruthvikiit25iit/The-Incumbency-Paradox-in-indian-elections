@@ -19,9 +19,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 try:
-    from scipy.stats import chi2_contingency, norm
+    from scipy.stats import norm
 except ImportError:  # Keep the script runnable where SciPy is not installed.
-    chi2_contingency = None
     norm = None
 
 
@@ -251,22 +250,6 @@ def analyze_transition(
         winners["win_rate"], winners["win_ci"],
         losers["win_rate"], losers["win_ci"],
     )
-    table = np.array(
-        [groups[label]["counts"].to_numpy() for label in groups], dtype=int
-    )
-    if chi2_contingency is not None:
-        chi2, p_value, degrees, _ = chi2_contingency(table, correction=False)
-    else:
-        # Every comparison is a 2-by-3 table, hence df=(2-1)(3-1)=2.
-        # The chi-square survival function for two degrees of freedom has
-        # the closed form exp(-x/2); calculate Pearson's statistic directly.
-        row_totals = table.sum(axis=1, keepdims=True)
-        col_totals = table.sum(axis=0, keepdims=True)
-        total = table.sum()
-        expected = row_totals @ col_totals / total
-        chi2 = float(np.sum((table - expected) ** 2 / expected))
-        degrees = 2
-        p_value = math.exp(-chi2 / 2)
     return {
         "threshold": threshold,
         "assembly": assembly,
@@ -276,12 +259,8 @@ def analyze_transition(
         "groups": groups,
         "difference": difference,
         "difference_ci": difference_ci,
-        "chi2": float(chi2),
-        "p_value": float(p_value),
-        "degrees": int(degrees),
         "ambiguous_candidates_excluded": ambiguous,
         "close_entries_missing_id": missing_id,
-        "contingency_table": table,
     }
 
 
@@ -318,24 +297,12 @@ def aggregate_results(transition_results: list[dict], z: float) -> list[dict]:
             winners["win_rate"], winners["win_ci"],
             losers["win_rate"], losers["win_ci"],
         )
-        table = np.array([groups[label]["counts"].to_numpy() for label in groups], dtype=int)
-        if chi2_contingency is not None:
-            chi2, p_value, degrees, _ = chi2_contingency(table, correction=False)
-        else:
-            expected = table.sum(axis=1, keepdims=True) @ table.sum(axis=0, keepdims=True) / table.sum()
-            chi2 = float(np.sum((table - expected) ** 2 / expected))
-            degrees = 2
-            p_value = math.exp(-chi2 / 2)
         pooled.append(
             {
                 "threshold": threshold,
                 "groups": groups,
                 "difference": difference,
                 "difference_ci": difference_ci,
-                "chi2": float(chi2),
-                "p_value": float(p_value),
-                "degrees": int(degrees),
-                "contingency_table": table,
                 "transition_count": len(subset),
                 "transitions": subset,
                 "ambiguous_candidates_excluded": sum(r["ambiguous_candidates_excluded"] for r in subset),
@@ -375,10 +342,6 @@ def render_report(results: list[dict]) -> str:
             f"{result['difference'] * 100:.2f} | Newcombe 95% CI "
             f"{result['difference_ci'][0] * 100:.2f} to "
             f"{result['difference_ci'][1] * 100:.2f}"
-        )
-        lines.append(
-            f"+/-{threshold:.0f}% | Pearson chi-square (df={result['degrees']}) | "
-            f"{result['chi2']:.3f} | p={result['p_value']:.4g}"
         )
     return "\n".join(lines)
 

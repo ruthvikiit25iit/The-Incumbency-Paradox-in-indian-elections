@@ -55,8 +55,6 @@ Cutoff | Prior result | N | Won | Lost | Did not contest | Win rate (95% Wilson 
 +/-2% | Narrow winner | 705 | 194 | 249 | 262 | 27.52% (24.35%-30.93%) | 443 | 62.84% | 43.79%
 +/-2% | Narrow loser | 721 | 152 | 141 | 428 | 21.08% (18.26%-24.21%) | 293 | 40.64% | 51.88%
 +/-2% | Difference (winner - loser, pp) | 6.44 | Newcombe 95% CI 1.98 to 10.86
-+/-2% | Pearson chi-square (df=2) | 74.772 | p=5.8e-17
 +/-5% | Narrow winner | 1714 | 506 | 617 | 591 | 29.52% (27.41%-31.72%) | 1123 | 65.52% | 45.06%
 +/-5% | Narrow loser | 1813 | 302 | 353 | 1158 | 16.66% (15.01%-18.44%) | 655 | 36.13% | 46.11%
 +/-5% | Difference (winner - loser, pp) | 12.86 | Newcombe 95% CI 10.10 to 15.61
-+/-5% | Pearson chi-square (df=2) | 304.631 | p=7.084e-67
