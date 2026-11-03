@@ -7,5 +7,16 @@ Chart saved to: signed_margin_analysis/visualisations/incumbent_win_rates_with_c
 
 
 ====================================================================================================================
+STAGE-2
 
-
+VICTORY MARGIN ANALYSIS
+=================================================================
+Statistic                          Incumbents      Non-incumbents
+-----------------------------------------------------------------
+Number of winners                        2835                5160
+Mean victory margin (%)                 16.75               15.29
+Median victory margin (%)               13.19               11.81
+Standard deviation (%)                  13.64               12.99
+-----------------------------------------------------------------
+Mean difference: 1.47 percentage points
+Positive difference means incumbents have the larger average margin.
