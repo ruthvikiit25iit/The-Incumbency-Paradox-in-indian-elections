@@ -98,6 +98,7 @@ plt.xticks(positions, labels, rotation=45)
 plt.title("Victory Margin Distribution of Winning Candidates")
 plt.xlabel("Victory Margin Percentage Bin")
 plt.ylabel("Number of Winners")
+plt.grid(axis="y")
 plt.legend()
 plt.tight_layout()
 
@@ -113,7 +114,24 @@ plt.boxplot(
     [
         incumbents["margin_percentage"],
         non_incumbents["margin_percentage"]
-    ]
+    ],
+    showfliers=False
+)
+
+plt.scatter(
+    [1] * len(incumbents),
+    incumbents["margin_percentage"],
+    color="blue",
+    alpha=0.12,
+    s=8
+)
+
+plt.scatter(
+    [2] * len(non_incumbents),
+    non_incumbents["margin_percentage"],
+    color="orange",
+    alpha=0.12,
+    s=8
 )
 
 plt.xticks([1, 2], ["Incumbents", "Non-incumbents"])
