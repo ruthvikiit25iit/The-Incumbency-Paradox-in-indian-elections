@@ -5,7 +5,7 @@ from pathlib import Path
 
 source_file = sys.argv[1]
 
-visualisation_folder = Path("data_visualisations")
+visualisation_folder = Path("visualisations")
 visualisation_folder.mkdir(exist_ok=True)
 
 data = pd.read_csv(source_file, low_memory=False)

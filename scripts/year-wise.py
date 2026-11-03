@@ -6,7 +6,7 @@ from pathlib import Path
 source_file = sys.argv[1]
 
 data_folder = Path("data_files")
-visualisation_folder = Path("data_visualisations")
+visualisation_folder = Path("visualisations")
 
 data_folder.mkdir(exist_ok=True)
 visualisation_folder.mkdir(exist_ok=True)
