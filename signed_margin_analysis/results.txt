@@ -1,0 +1,11 @@
+Input file: signed_margin_analysis/data_files/elections_with_margin_history_and_party_vote_share_from_field.csv
+Confidence level: 95%
+Incumbent win rate: 2,837/4,900 = 57.90% (95% CI: 56.51% to 59.27%)
+Non-incumbent win rate: 5,171/12,855 = 40.23% (95% CI: 39.38% to 41.08%)
+Win-rate difference (incumbent minus non-incumbent): 17.67% (95% CI: 16.04% to 19.29%)
+Chart saved to: signed_margin_analysis/visualisations/incumbent_win_rates_with_confidence_intervals.png
+
+
+====================================================================================================================
+
+
