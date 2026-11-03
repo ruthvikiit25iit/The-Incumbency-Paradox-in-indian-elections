@@ -1,4 +1,6 @@
-"""Filter elections, calculate signed margins, and add candidate/party history.
+"""
+filter election add margin and history
+Filter elections, calculate signed margins, and add candidate/party history.
 
 Run from the project folder:
     python signed_margin_analysis/scripts/filter_elections_add_margin_and_history.py input.csv output.csv

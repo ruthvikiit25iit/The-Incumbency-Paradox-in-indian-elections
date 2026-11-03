@@ -1,4 +1,6 @@
-"""Compare incumbent and non-incumbent win rates and make a bar chart.
+"""
+Calculate win rates and confidence intervals
+Compare incumbent and non-incumbent win rates and make a bar chart.
 
 Usage:
     python signed_margin_analysis/scripts/calculate_win_rates_and_confidence_intervals.py input.csv
