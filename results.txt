@@ -20,3 +20,12 @@ Standard deviation (%)                  13.64               12.99
 -----------------------------------------------------------------
 Mean difference: 1.47 percentage points
 Positive difference means incumbents have the larger average margin.
+
+=====================================================================================================================
+SAME CONSTITUENCY LINEAR REGRESSION
+-----------------------------------
+Observations: 6168
+Intercept (beta_0): 0.268999
+Slope (beta_1): 0.191599
+Fitted line: Y_hat = 0.2690 + 0.1916X
+R-squared: 0.038901
