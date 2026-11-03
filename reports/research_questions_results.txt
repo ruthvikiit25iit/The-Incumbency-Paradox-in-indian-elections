@@ -1,0 +1,30 @@
+--- BEGIN QUESTION 1 - WIN RATES AND CONFIDENCE INTERVALS ---
+QUESTION 1: Do incumbents have a higher observed winning rate?
+
+Purpose
+Compare the observed candidate win rates for incumbents and non-incumbents.
+
+Data and scope
+- Input: signed_margin_analysis/data_files/elections_with_margin_history_and_party_vote_share_from_field.csv
+- Election rows: poll_type == 0
+- Winner definition: position == 1
+- Rows with missing incumbent status excluded: 1,085
+- No deposit-lost candidates are present in this input file; the rates apply to the candidates retained in this file.
+
+Stage 1: Observed winning rates
+- Incumbents: 2,837 wins / 4,900 candidates = 57.90%
+- Non-incumbents: 5,171 wins / 12,855 candidates = 40.23%
+- Difference (incumbent minus non-incumbent): 17.67 percentage points
+
+Stage 2: 95% confidence intervals
+- Incumbent win rate, Wilson interval: 56.51% to 59.27%
+- Non-incumbent win rate, Wilson interval: 39.38% to 41.08%
+- Difference, Newcombe interval: 16.04 to 19.29 percentage points
+- SciPy provides the normal critical value used in the interval calculations.
+
+Interpretation
+The difference interval does not include zero, indicating different observed win rates in this dataset. This is an association, not proof that incumbency caused the difference.
+
+Limitations
+The basic intervals treat candidate entries as independent. Candidates who appear in multiple elections may make that assumption imperfect.
+--- END QUESTION 1 - WIN RATES AND CONFIDENCE INTERVALS ---
