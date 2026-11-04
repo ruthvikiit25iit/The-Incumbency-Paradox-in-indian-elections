@@ -41,20 +41,20 @@ R-squared: 0.038901
 ======================================================================================================================
 
 Multiple linear regression
+Current election poll_type: 0
+Previous contest poll_type: all values
+Previous party poll_type: all values
+Complete model records: 5,181
 Model: Y = beta_0 + beta_1*I + beta_2*M + beta_3*P
-Y = subsequent margin; I = incumbent (1/0); M = previous margin; P = previous party vote share
-Fitted equation: Y = -4.4949 + (-2.5948 * I) + (0.2182 * M) + (0.1829 * P)
-Candidates included: 5,051
+Fitted equation: Y = -4.4527 - 2.4944I + 0.2237M + 0.1808P
 Coefficients (estimate, 95% CI):
-  beta_0 (intercept): -4.4949 (-6.8300, -2.1597)
-  beta_1 (incumbency): -2.5948 (-4.1829, -1.0067)
-  beta_2 (previous margin): 0.2182 (0.1722, 0.2643)
-  beta_3 (party vote share): 0.1829 (0.1297, 0.2362)
-Incumbency coefficient p-value: 0.001368
-R-squared: 0.0816
-Regression graph saved to: visualisations/multiple_regression_observed_vs_predicted.png
-
-====================================================================================================================
+  beta_0: -4.4527 (-6.7416, -2.1638)
+  beta_1: -2.4944 (-4.0522, -0.9365)
+  beta_2: 0.2237 (0.1791, 0.2683)
+  beta_3: 0.1808 (0.1285, 0.2331)
+Incumbency coefficient p-value: 0.001705
+R-squared: 0.0850
+======================================================================================================================
 
 CLOSE-ELECTION ANALYSIS
 Cutoff | Prior result | N | Won | Lost | Did not contest | Win rate (95% Wilson CI) | Recontested | Recontest rate | Win among recontesters
@@ -64,3 +64,4 @@ Cutoff | Prior result | N | Won | Lost | Did not contest | Win rate (95% Wilson 
 +/-5% | Narrow winner | 1714 | 506 | 617 | 591 | 29.52% (27.41%-31.72%) | 1123 | 65.52% | 45.06%
 +/-5% | Narrow loser | 1813 | 302 | 353 | 1158 | 16.66% (15.01%-18.44%) | 655 | 36.13% | 46.11%
 +/-5% | Difference (winner - loser, pp) | 12.86 | Newcombe 95% CI 10.10 to 15.61
+======================================================================================================================

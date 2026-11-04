@@ -25,8 +25,6 @@ def read_analysis_rows():
     candidates = pd.read_csv(INPUT_FILE, low_memory=False)
     required_columns = {
         "poll_type",
-        "previous_contest_poll_type",
-        "previous_party_election_poll_type",
         "incumbent",
         Y_COLUMN,
         M_COLUMN,
@@ -36,11 +34,9 @@ def read_analysis_rows():
     if missing:
         raise ValueError("Missing columns: " + ", ".join(sorted(missing)))
 
-    # Compare regular general elections and use only complete records.
+    # Keep regular elections as outcome records. Previous contest and party election poll types are unrestricted.
     numeric_columns = [
         "poll_type",
-        "previous_contest_poll_type",
-        "previous_party_election_poll_type",
         Y_COLUMN,
         M_COLUMN,
         P_COLUMN,
@@ -55,9 +51,7 @@ def read_analysis_rows():
     )
 
     rows = candidates.loc[
-        (candidates["poll_type"] == 0)
-        & (candidates["previous_contest_poll_type"] == 0)
-        & (candidates["previous_party_election_poll_type"] == 0),
+        (candidates["poll_type"] == 0),
         ["I", Y_COLUMN, M_COLUMN, P_COLUMN],
     ].dropna()
     return rows
@@ -178,36 +172,32 @@ def main():
     model = fit_model(rows)
     beta_0, beta_1, beta_2, beta_3 = model["coefficients"]
 
-    print("Multiple regression: predicting a candidate's next signed margin")
+    separator = "=" * 110
+    print(separator)
+    print("MULTIPLE LINEAR REGRESSION")
+    print(f"Current election poll_type: 0")
+    print("Previous contest poll_type: all values")
+    print("Previous party poll_type: all values")
+    print(f"Complete model records: {len(rows):,}")
     print("Model: Y = beta_0 + beta_1*I + beta_2*M + beta_3*P")
     print(
-        "Y is the next margin; I is incumbent status (1/0); "
-        "M is the candidate's previous margin; P is the party's previous vote share."
-    )
-    print(
         "Fitted equation: Y = "
-        f"{beta_0:.4f} + ({beta_1:.4f} * I) "
-        f"+ ({beta_2:.4f} * M) + ({beta_3:.4f} * P)"
+        f"{beta_0:.4f} {beta_1:+.4f}I "
+        f"{beta_2:+.4f}M {beta_3:+.4f}P"
     )
-    print(f"Candidate election records included: {len(rows):,}")
-    print("Estimated coefficients (95% confidence intervals):")
+    print("Coefficients (estimate, 95% CI):")
     for name, estimate, lower, upper in zip(
-        [
-            "beta_0 (starting value)",
-            "beta_1 (incumbency)",
-            "beta_2 (previous candidate margin)",
-            "beta_3 (previous party vote share)",
-        ],
+        ["beta_0", "beta_1", "beta_2", "beta_3"],
         model["coefficients"],
         model["lower_bounds"],
         model["upper_bounds"],
     ):
         print(f"  {name}: {estimate:.4f} ({lower:.4f}, {upper:.4f})")
-    print(f"Incumbency coefficient p-value: {model['p_values'][1]:.4g}")
-    print(f"Share of outcome variation explained (R-squared): {model['r_squared']:.4f}")
+    print(f"Incumbency coefficient p-value: {model['p_values'][1]:.6f}")
+    print(f"R-squared: {model['r_squared']:.4f}")
+    print(separator)
 
     save_plot(model)
-    print(f"Regression graph saved to: {PLOT_FILE}")
 
 
 if __name__ == "__main__":
